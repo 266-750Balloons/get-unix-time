@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Current Date in Unix Time</title>
+        <style>
+            #timestamp {
+                border: 1px black solid;
+                padding: 2px;
+                background-color: lightgray;
+            }
+        </style>
+    </head>
+    <body>
+        <p>The Unix timestamp range for <span id="date"></span> in the current timezone (UTC<span id="offset"></span>) is <span id="timestamp"><span id="startTime"></span>-<span id="endTime"></span></span>.</p>
+        <button id="copyTimestamp">Copy Timestamp</button><br>
+        <label>Change Date</label>
+        <input type="date" id="dateInput"><br>
+        <script>
+            const startTime = document.getElementById("startTime");
+            const endTime = document.getElementById("endTime");
+            const offset = document.getElementById("offset");
+            const dateInput = document.getElementById("dateInput");
+            const date = document.getElementById("date");
+            const copyTimestamp = document.getElementById("copyTimestamp");
+            const timestamp = document.getElementById("timestamp");
+
+            dateInput.valueAsDate = new Date();
+
+            updateRange();
+
+            dateInput.addEventListener("change", updateRange);
+            copyTimestamp.addEventListener("click", cpTimestamp);
+
+            function updateRange() {
+                //const startRange = new Date();
+                const startRange = dateInput.valueAsDate;
+                startRange.setDate(startRange.getDate() + 1);
+                startRange.setSeconds(0);
+                startRange.setHours(0);
+                startRange.setMinutes(0);
+
+                const timezone = startRange.getTimezoneOffset() * -1 / 60;
+                if(timezone >= 0) {
+                    offset.textContent = "+" + timezone;
+                } else {
+                    offset.textContent =  timezone;
+                }
+
+                const endRange = new Date(startRange);
+                endRange.setSeconds(59);
+                endRange.setMinutes(59);
+                endRange.setHours(23);
+
+                startTime.innerText = Math.floor(startRange.getTime() / 1000).toString();
+                endTime.innerText = Math.floor(endRange.getTime() / 1000).toString();
+                date.innerText = startRange.toDateString();
+            }
+
+            async function cpTimestamp() {
+                await navigator.clipboard.writeText(timestamp.innerText);
+                alert("Timestamp " + timestamp.innerText +" copied");
+            }
+        </script>
+    </body>
+</html>
